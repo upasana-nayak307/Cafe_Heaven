@@ -11,49 +11,64 @@ const bookingRoutes = require("./routes/bookingTableRoute");
 const menuRoutes = require("./routes/menuRoute");
 const authRoutes = require("./routes/authRoutes");
 
-// ✅ 1. CORS Configuration (Allows requests & Authorization headers from Vite)
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// 1. Allowed origins configuration
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  process.env.FRONTEND_URL
+].filter(Boolean);
 
-// ✅ 2. Middleware with increased payload limits for Base64 Profile Photos (Fixes 413 Payload Too Large)
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, true);
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+  optionsSuccessStatus: 200
+};
+
+// 2. Enable CORS middleware BEFORE routes (automatically handles preflight OPTIONS)
+app.use(cors(corsOptions));
+
+// 3. Body Parsing Middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// ✅ Create server
+// 4. Create Server & WebSockets
 const server = http.createServer(app);
-
-// ✅ Socket setup
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL,
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
-  });
+  socket.on("disconnect", () => console.log("User disconnected"));
 });
 
-// ✅ Make io accessible in controllers
 app.set("io", io);
 
-// ✅ Routes
+// 5. Routes
 app.use("/api", bookingRoutes);
 app.use("/api", menuRoutes);
 app.use("/api", authRoutes);
 
-// ✅ Start Server
-const port=process.env.PORT;
-server.listen(port, () => {
-  console.log("Server running on port:",port);
+// 6. Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("Global Error Handler:", err.stack);
+  res.status(500).json({ message: err.message || "Internal Server Error" });
+});
+
+// 7. Start Server
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`Server running on port: ${PORT}`);
 });

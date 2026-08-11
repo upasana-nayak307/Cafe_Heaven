@@ -8,7 +8,7 @@ import axios from "axios";
 export default function AdminLayout() {
   const location = useLocation();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [bookings,setBookings]=useState([]);
+  const [bookings, setBookings] = useState([]);
   const hideSearchRoutes = ["/admin/analyticsBoard", "/admin/profile"];
 
   const shouldShowSearch =
@@ -21,23 +21,31 @@ export default function AdminLayout() {
   else if (location.pathname === "/admin/menu") {
     placeholder = "Search item by name";
   }
-  else if(location.pathname==="/admin/reservations"){
-    placeholder="Search name, phone, ID..."
+  else if (location.pathname === "/admin/reservations") {
+    placeholder = "Search name, phone, ID...";
   }
-  else if(location.pathname==="/admin/customers"){
-    placeholder="Search by name,phone or email..."
+  else if (location.pathname === "/admin/customers") {
+    placeholder = "Search by name, phone or email...";
   }
-  useEffect(()=>{
-    const fetchBookings=async () => {
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      const token = localStorage.getItem("adminToken");
+      
       try {
-        const res=await axios.get("http://localhost:8080/api/bookingLists");
+        const res = await axios.get("http://localhost:8080/api/bookingLists", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setBookings(res.data);
       } catch (error) {
-        console.log("Facing issue in fetching: ",error);
+        console.log("Facing issue in fetching: ", error);
       }
-    }
+    };
+    
     fetchBookings();
-  },[])
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden relative">
@@ -70,11 +78,11 @@ export default function AdminLayout() {
         />
 
         <main className="flex-1 overflow-y-auto min-w-0">
-          <Outlet context={{bookings,setBookings}} />
+          <Outlet context={{ bookings, setBookings }} />
         </main>
 
       </div>
-      <BookTableDialog bookings={bookings} setBookings={setBookings} isOpen={false}/>
+      <BookTableDialog bookings={bookings} setBookings={setBookings} isOpen={false} />
     </div>
   );
 }

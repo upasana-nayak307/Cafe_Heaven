@@ -177,7 +177,7 @@ export default function AnalyticsPanel() {
           {/* Filter Bar (Static Visuals) */}
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Date Range Selector */}
-            <div className="inline-flex items-center gap-1 bg-slate-100 p-1 rounded-full border border-slate-200/80 shadow-inner max-w-full overflow-x-auto">
+            <div className="inline-flex items-center gap-1 bg-slate-100 p-1 rounded-full border border-slate-200/80 shadow-inner max-w-full overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {FILTER_TABS.map((cat) => {
                 const isActive = category === cat;
                 return (
