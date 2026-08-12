@@ -46,7 +46,7 @@ export default function Login() {
     }
 
     try {
-      const res = await axios.post(`${API}/api/login`, formData);
+      const res = await axios.post(`${API}/login`, formData);
 
       if (res.data.token) {
         localStorage.setItem('adminToken', res.data.token);

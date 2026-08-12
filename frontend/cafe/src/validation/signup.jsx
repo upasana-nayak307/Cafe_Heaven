@@ -62,7 +62,7 @@ export default function Signup() {
     }
 
     try {
-      const res = await axios.post(`${API}/api/signup`, formData);
+      const res = await axios.post(`${API}/signup`, formData);
       console.log(res.data);
       if (res.data.token) {
         localStorage.setItem('adminToken', res.data.token);
