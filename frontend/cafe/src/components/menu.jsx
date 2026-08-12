@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { motion, useInView } from 'framer-motion';
-import { Coffee, Pizza, Cake, Cookie, ChevronDown, ChevronUp, Search, X, IndianRupee } from 'lucide-react';
+import {ChevronDown, ChevronUp, Search, X, IndianRupee } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { HiSparkles } from 'react-icons/hi';
+
 const Menu = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
@@ -15,12 +16,13 @@ const Menu = () => {
   const [dietFilter, setDietFilter] = useState("All");
   const [showAll, setShowAll] = useState(false);
   const [menuData,setMenuData]=useState([]);
+  const API=import.meta.env.VITE_BACKEND_URL;
 
   const INITIAL_LIMIT = 4;
   useEffect(()=>{
     const fetchData=async () => {
       try {
-        const res=await axios.get("http://localhost:8080/api/allItems");
+        const res=await axios.get(`${API}/allItems`);
         setMenuData(res.data.allItems);
       } catch (error) {
         console.log(error);

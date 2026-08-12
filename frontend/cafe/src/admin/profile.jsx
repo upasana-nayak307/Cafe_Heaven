@@ -45,7 +45,7 @@ export default function UserProfileCard() {
 
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:8080/api/profile', {
+      const res = await axios.get(`${API}/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -107,7 +107,7 @@ export default function UserProfileCard() {
     const token = localStorage.getItem('adminToken');
 
     try {
-      const res = await axios.put('http://localhost:8080/api/profile', formData, {
+      const res = await axios.put(`${API}/profile`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

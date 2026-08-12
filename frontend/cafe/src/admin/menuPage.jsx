@@ -11,10 +11,11 @@ export default function MenuPage() {
   const [open, setOpen] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
   const [editItem, setEditItem] = useState(null);
+  const API=import.meta.env.VITE_BACKEND_URL;
 
   const fetchMenuData = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/allItems");
+      const res = await axios.get(`${API}/allItems`);
       console.log(res.data.allItems);
       setMenuItems(res.data.allItems);
     } catch (error) {
@@ -34,7 +35,7 @@ export default function MenuPage() {
 
     // sending the changes to backend
     try {
-      await axios.put(`http://localhost:8080/api/updateItem/${id}`, { available: !currentStatus });
+      await axios.put(`${API}/updateItem/${id}`, { available: !currentStatus });
     } catch (error) {
       console.log(error);
     }
@@ -49,7 +50,7 @@ export default function MenuPage() {
 
   const handleDeleteItem = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/api/deleteItem/${id}`);
+      await axios.delete(`${API}/deleteItem/${id}`);
       fetchMenuData();
     } catch (error) {
       console.log("FULL ERR: ", error);

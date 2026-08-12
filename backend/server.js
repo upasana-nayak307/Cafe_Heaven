@@ -11,28 +11,29 @@ const bookingRoutes = require("./routes/bookingTableRoute");
 const menuRoutes = require("./routes/menuRoute");
 const authRoutes = require("./routes/authRoutes");
 
-// 1. Allowed origins configuration
+// 1. Allowed origins configuration (Only frontend clients)
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
-  process.env.FRONTEND_URL
+  process.env.FRONTEND_URL,
 ].filter(Boolean);
 
 const corsOptions = {
   origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, or curl)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(null, true);
+      callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
-// 2. Enable CORS middleware BEFORE routes (automatically handles preflight OPTIONS)
+// 2. Enable CORS middleware
 app.use(cors(corsOptions));
 
 // 3. Body Parsing Middleware
@@ -64,6 +65,12 @@ app.use("/api", authRoutes);
 // 6. Global Error Handler
 app.use((err, req, res, next) => {
   console.error("Global Error Handler:", err.stack);
+  
+  // Handle CORS errors specifically
+  if (err.message === "Not allowed by CORS") {
+    return res.status(403).json({ message: "CORS origin blocked" });
+  }
+
   res.status(500).json({ message: err.message || "Internal Server Error" });
 });
 

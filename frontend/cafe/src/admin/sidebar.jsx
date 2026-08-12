@@ -14,6 +14,7 @@ import {
 
 export default function Sidebar({ onClose }) {
   const [userData, setUserData] = useState(null);
+  const API=import.meta.env.VITE_BACKEND_URL;
 
   // Fetch logged-in user profile
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function Sidebar({ onClose }) {
       if (!token) return;
 
       try {
-        const res = await axios.get('http://localhost:8080/api/profile', {
+        const res = await axios.get(`${API}/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.data.user) {

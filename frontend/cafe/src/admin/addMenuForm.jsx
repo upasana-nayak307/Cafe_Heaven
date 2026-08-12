@@ -34,6 +34,8 @@ export default function AddItemForm({ onClose, editItem }) {
     { name : "Pasta", icon:Soup}
   ];
 
+  const API=import.meta.env.VITE_BACKEND_URL;
+
   const [menuData, setMenuData] = useState({
     itemName: "",
     price: "",
@@ -82,14 +84,14 @@ export default function AddItemForm({ onClose, editItem }) {
     try {
       if (editItem) {
         const update = await axios.put(
-          `http://localhost:8080/api/updateItem/${editItem._id}`,
+          `${API}/updateItem/${editItem._id}`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
         console.log("Updated item:", update.data);
       } else {
         const res = await axios.post(
-          "http://localhost:8080/api/addNewItem",
+          `${API}/addNewItem`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );

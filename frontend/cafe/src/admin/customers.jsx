@@ -18,6 +18,7 @@ export default function CustomerManagement() {
 
   const filterTabs=['All Customers', 'Frequent', 'New', 'VIP'];
   const [category,setSelectCategory]=useState("All Customers");
+  const API=import.meta.env.VITE_BACKEND_URL;
 
   const getStatusBadge = (status) => {
     switch (status.toLowerCase()) {
@@ -63,7 +64,7 @@ export default function CustomerManagement() {
 
   const handleCustomerType=async (id,customerType)=>{
     try {
-      const res=await axios.put(`http://localhost:8080/api/updateBookingData/${id}`,{customerType:customerType});
+      const res=await axios.put(`${API}/updateBookingData/${id}`,{customerType:customerType});
       console.log(res.data);
       setBookings((prevItem)=>
         prevItem.map((item)=>item._id===id ? {...item,customerType} : item)

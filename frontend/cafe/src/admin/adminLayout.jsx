@@ -10,6 +10,7 @@ export default function AdminLayout() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [bookings, setBookings] = useState([]);
   const hideSearchRoutes = ["/admin/analyticsBoard", "/admin/profile"];
+  const API=import.meta.env.VITE_BACKEND_URL;
 
   const shouldShowSearch =
     !hideSearchRoutes.includes(location.pathname);
@@ -33,7 +34,7 @@ export default function AdminLayout() {
       const token = localStorage.getItem("adminToken");
       
       try {
-        const res = await axios.get("http://localhost:8080/api/bookingLists", {
+        const res = await axios.get(`${API}/bookingLists`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

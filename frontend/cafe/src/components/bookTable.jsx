@@ -19,7 +19,7 @@ export default function BookTableDialog({ isOpen, onClose,setBookings }) {
   });
 
   const [errorMsg,setErrorMsg]=useState({});
-
+  const API=import.meta.env.VITE_BACKEND_URL;
   const handleChange=async (e) => {
     const {name,value}=e.target;
     setFormData({...formData,[name]:value});
@@ -65,7 +65,7 @@ export default function BookTableDialog({ isOpen, onClose,setBookings }) {
     setErrorMsg({});
     try {
       console.log(formData);
-      const res=await axios.post("http://localhost:8080/api/bookingData",formData);
+      const res=await axios.post(`${API}/bookingData`,formData);
       console.log(res.data);
       if(typeof setBookings==="function"){
       setBookings((prev)=>[...prev, res.data.bookingList]);

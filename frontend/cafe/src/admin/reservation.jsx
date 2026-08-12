@@ -43,6 +43,7 @@ export default function ReservationsPage() {
 
   const [category,setCategory]=useState("All");
   const FILTER_TABS = ['All', 'Today', 'Upcoming', 'Completed', 'Cancelled'];
+  const API=import.meta.env.VITE_BACKEND_URL;
 
   const getTodayString = () => {
     const today = new Date();
@@ -86,7 +87,7 @@ export default function ReservationsPage() {
   
   const updateStatus=async (id,status) => {
     try {
-      const res=await axios.put(`http://localhost:8080/api/updateBookingData/${id}`,{status:status});
+      const res=await axios.put(`${API}/updateBookingData/${id}`,{status:status});
       console.log(res.data);
     } catch (error) {
       console.log(error);
@@ -97,7 +98,7 @@ export default function ReservationsPage() {
   }
   const updateTable=async(id,tableNo)=>{
     try {
-      const res=await axios.put(`http://localhost:8080/api/updateBookingData/${id}`,{tableNumber:tableNo});
+      const res=await axios.put(`${API}/updateBookingData/${id}`,{tableNumber:tableNo});
       console.log(res.data);
     } catch (error) {
       console.log(error);
