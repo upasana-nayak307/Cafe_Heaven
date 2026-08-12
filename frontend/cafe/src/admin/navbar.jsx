@@ -14,15 +14,35 @@ const socket = io(BACKEND_URL, {
 export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
 
+  // 1. Initialize state from localStorage (or fallback to empty array)
+  const [notifications, setNotifications] = useState(() => {
+    try {
+      const saved = localStorage.getItem("cafe_notifications");
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error("Error reading notifications from localStorage:", error);
+      return [];
+    }
+  });
+
+  // 2. Save notifications to localStorage whenever state updates
+  useEffect(() => {
+    try {
+      localStorage.setItem("cafe_notifications", JSON.stringify(notifications));
+    } catch (error) {
+      console.error("Error saving notifications to localStorage:", error);
+    }
+  }, [notifications]);
+
+  // 3. Listen for Socket events
   useEffect(() => {
     const handleNewBooking = (data) => {
       const newNotification = {
         id: Date.now(),
         title: "New Reservation",
         message: `Table ${data.tableNumber || "-"} booked by ${data.name || "Guest"}`,
-        time: "Just now",
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         read: false,
         type: "booking",
       };
@@ -34,7 +54,7 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
         id: Date.now(),
         title: "Booking Cancelled",
         message: data.message || "A reservation was cancelled.",
-        time: "Just now",
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         read: false,
         type: "cancelled",
       };
@@ -54,8 +74,7 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
 
   return (
     <header className="h-16 sm:h-20 bg-white border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 md:px-8 flex-shrink-0 sticky top-0 z-30">
-      
-      {/* LEFT SECTION: HAMBURGER & SEARCH */}
+      {/* LEFT SECTION */}
       <div className="flex items-center gap-3 flex-1">
         <button
           type="button"
