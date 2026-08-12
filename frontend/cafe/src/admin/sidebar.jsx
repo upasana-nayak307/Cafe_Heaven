@@ -23,7 +23,7 @@ export default function Sidebar({ onClose }) {
       if (!token) return;
 
       try {
-        const res = await axios.get(`${API}/profile`, {
+        const res = await axios.get(`${API}/api/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.data.user) {
