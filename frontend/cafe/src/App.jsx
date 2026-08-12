@@ -48,18 +48,25 @@ function AdminRoute({ children }) {
         path="/"
         element={
           <>
+          <div className="relative w-full max-w-full overflow-x-hidden min-h-screen bg-[#FAFAFA]">
             <Navbar onBookTableClick={() => setShowBooking(true)} />
-            <Hero onBookTableClick={() => setShowBooking(true)} />
-            <About />
-            <Menu />
-            <Gallery />
-            <Testimonials />
-            <Contact />
+            
+            <main className="w-full max-w-full overflow-x-hidden">
+              <Hero onBookTableClick={() => setShowBooking(true)} />
+              <About />
+              <Menu />
+              <Gallery />
+              <Testimonials />
+              <Contact />
+              <Footer />
+              <BookTableDialog
+                isOpen={showBooking}
+                onClose={() => setShowBooking(false)}
+              />
+            </main>
+
             <Footer />
-            <BookTableDialog
-              isOpen={showBooking}
-              onClose={() => setShowBooking(false)}
-            />
+          </div>
           </>
         }
       />
