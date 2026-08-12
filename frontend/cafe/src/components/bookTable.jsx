@@ -80,6 +80,9 @@ export default function BookTableDialog({ isOpen, onClose,setBookings }) {
       specialRequest:""
     })
     setSelectedDate(null);
+    if (typeof onClose === "function") {
+      onClose();
+    }
     } catch (error) {
       if (error.response && error.response.data.errors) {
         console.log(error.response.data.errors);

@@ -64,8 +64,6 @@ function AdminRoute({ children }) {
                 onClose={() => setShowBooking(false)}
               />
             </main>
-
-            <Footer />
           </div>
           </>
         }

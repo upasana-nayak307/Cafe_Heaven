@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
   CheckCheck, 
   Trash2, 
@@ -7,65 +7,26 @@ import {
   CheckCircle2, 
   Info 
 } from 'lucide-react';
-import { io } from "socket.io-client";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
-const socket = io(BACKEND_URL, {
-  transports: ["websocket"],
-  withCredentials: true,
-});
-
-export default function NotificationPanel({ isOpen, setIsOpen }) {
-  // ✅ 1. ALL HOOKS MUST RUN AT THE TOP LEVEL
-  const [notifications, setNotifications] = useState([]);
-
-  useEffect(() => {
-    const handleNewBooking = (data) => {
-      const newNotification = {
-        id: Date.now(),
-        title: "New Reservation",
-        message: `Table ${data.tableNumber || "-"} booked by ${data.name}`,
-        time: "Just now",
-        read: false,
-        type: "booking",
-      };
-
-      setNotifications((prev) => [newNotification, ...prev]);
-    };
-
-    const handleCancelledBooking = (data) => {
-      const newNotification = {
-        id: Date.now(),
-        title: "Booking Cancelled",
-        message: data.message || "A reservation was cancelled.",
-        time: "Just now",
-        read: false,
-        type: "cancelled",
-      };
-
-      setNotifications((prev) => [newNotification, ...prev]);
-    };
-
-    socket.on("new-booking", handleNewBooking);
-    socket.on("booking-cancelled", handleCancelledBooking);
-
-    return () => {
-      socket.off("new-booking", handleNewBooking);
-      socket.off("booking-cancelled", handleCancelledBooking);
-    };
-  }, []);
-
+export default function NotificationPanel({ 
+  isOpen, 
+  setIsOpen, 
+  notifications = [], 
+  setNotifications 
+}) {
   // Action Handlers
   const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    if (typeof setNotifications === 'function') {
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    }
   };
 
   const handleClearAll = () => {
-    setNotifications([]);
+    if (typeof setNotifications === 'function') {
+      setNotifications([]);
+    }
   };
 
-  // ✅ 2. CONDITIONAL RETURN MUST GO AFTER HOOKS
   if (!isOpen) return null;
 
   const renderIcon = (type) => {
@@ -81,6 +42,8 @@ export default function NotificationPanel({ isOpen, setIsOpen }) {
     }
   };
 
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
   return (
     <div className="w-[360px] bg-white rounded-2xl shadow-lg border border-gray-100/80 overflow-hidden font-sans">
       {/* Header */}
@@ -90,7 +53,7 @@ export default function NotificationPanel({ isOpen, setIsOpen }) {
             Notifications
           </h3>
           <span className="px-2.5 py-0.5 text-xs font-medium text-[#2563EB] bg-[#EFF6FF] rounded-full">
-            {notifications.filter(n => !n.read).length} new
+            {unreadCount} new
           </span>
         </div>
 
