@@ -22,7 +22,7 @@ const Menu = () => {
   useEffect(()=>{
     const fetchData=async () => {
       try {
-        const res=await axios.get(`${API}/allItems`);
+        const res=await axios.get(`${API}/api/allItems`);
         setMenuData(res.data.allItems);
       } catch (error) {
         console.log(error);
