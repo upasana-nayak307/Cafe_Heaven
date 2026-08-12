@@ -7,6 +7,7 @@ async function main() {
 main().then(()=>{
     console.log("Database is connected");
 })
-.catch(()=>{
+.catch((error)=>{
     console.log("Database is not connected");
+    console.log(error);
 })
