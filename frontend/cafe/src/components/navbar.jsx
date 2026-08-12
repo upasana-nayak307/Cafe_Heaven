@@ -16,7 +16,7 @@ const Navbar = ({ onBookTableClick }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Updated paths to point to separate page routes
+  // Use URL paths instead of section IDs or component imports
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Menu', path: '/menu' },
@@ -25,87 +25,90 @@ const Navbar = ({ onBookTableClick }) => {
     { name: 'Contact', path: '/contact' },
   ];
 
+  const isHomePage = location.pathname === '/';
+
   return (
     <nav
       data-testid="navbar"
-      className={`fixed top-0 inset-x-0 z-50 w-full transition-all duration-500 ${
-        scrolled || location.pathname !== '/'
-          ? 'backdrop-blur-md bg-white/80 border-b border-stone-200/50 shadow-xs'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled || !isHomePage
+          ? 'backdrop-blur-md bg-white/90 border-b border-gray-100 shadow-sm'
           : 'bg-transparent'
       }`}
     >
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-12">
-        <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Logo */}
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo Link */}
           <Link to="/" className="flex items-center">
             <h1
               data-testid="nav-logo"
-              className={`text-xl sm:text-2xl font-serif font-bold tracking-tight transition-colors duration-300 ${
-                scrolled || location.pathname !== '/' ? 'text-[#0A4D8C]' : 'text-white'
+              className={`text-2xl font-serif font-bold transition-colors duration-300 ${
+                scrolled || !isHomePage ? 'text-[#0A4D8C]' : 'text-white'
               }`}
             >
               The Cafe Heaven
             </h1>
           </Link>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop Links */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
-              const isDarkText = scrolled || location.pathname !== '/';
+              const isDarkText = scrolled || !isHomePage;
 
               return (
                 <Link
                   key={link.name}
                   to={link.path}
                   data-testid={`nav-link-${link.name.toLowerCase()}`}
-                  className={`font-medium transition-colors duration-300 ${
+                  className={`font-medium transition-colors duration-300 hover:text-[#6DBE45] ${
                     isActive
                       ? 'text-[#6DBE45] font-semibold'
                       : isDarkText
-                      ? 'text-[#05223D] hover:text-[#6DBE45]'
-                      : 'text-white hover:text-[#6DBE45]'
+                      ? 'text-[#05223D]'
+                      : 'text-white'
                   }`}
                 >
                   {link.name}
                 </Link>
               );
             })}
+            
             <button
               data-testid="nav-book-table-btn"
               onClick={onBookTableClick}
-              className="bg-[#0A4D8C] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[#073663] transition-all duration-300 hover:scale-105 shadow-md cursor-pointer"
+              className="bg-[#0A4D8C] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[#073663] transition-all duration-300 hover:scale-105 shadow-lg cursor-pointer"
             >
               Book a Table
             </button>
           </div>
 
-          {/* Mobile Menu Toggle Button */}
+          {/* Mobile Menu Button */}
           <button
             data-testid="mobile-menu-toggle"
-            className="md:hidden z-50 p-2 focus:outline-none cursor-pointer"
+            className="md:hidden z-50 cursor-pointer p-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? (
-              <HiX className={`w-7 h-7 ${scrolled || location.pathname !== '/' ? 'text-[#0A4D8C]' : 'text-white'}`} />
+              <HiX className={`w-7 h-7 ${scrolled || !isHomePage ? 'text-[#0A4D8C]' : 'text-white'}`} />
             ) : (
-              <HiMenuAlt3 className={`w-7 h-7 ${scrolled || location.pathname !== '/' ? 'text-[#0A4D8C]' : 'text-white'}`} />
+              <HiMenuAlt3 className={`w-7 h-7 ${scrolled || !isHomePage ? 'text-[#0A4D8C]' : 'text-white'}`} />
             )}
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Dropdown */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             data-testid="mobile-menu"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden w-full bg-white/95 backdrop-blur-xl border-b border-stone-200 overflow-hidden shadow-xl"
+            className="md:hidden backdrop-blur-xl bg-white/95 border-b border-gray-200 overflow-hidden shadow-xl"
           >
             <div className="px-6 py-6 space-y-4">
               {navLinks.map((link) => (
@@ -129,7 +132,7 @@ const Navbar = ({ onBookTableClick }) => {
                   onBookTableClick();
                   setMobileMenuOpen(false);
                 }}
-                className="w-full bg-[#0A4D8C] text-white px-6 py-3 rounded-full font-medium hover:bg-[#073663] transition-all duration-300 shadow-md cursor-pointer"
+                className="w-full bg-[#0A4D8C] text-white px-6 py-3 rounded-full font-medium hover:bg-[#073663] transition-all duration-300 shadow-lg cursor-pointer"
               >
                 Book a Table
               </button>
