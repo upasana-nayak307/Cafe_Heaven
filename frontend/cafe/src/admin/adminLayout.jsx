@@ -34,7 +34,7 @@ export default function AdminLayout() {
       const token = localStorage.getItem("adminToken");
       
       try {
-        const res = await axios.get(`${API}/bookingLists`, {
+        const res = await axios.get(`${API}/api/bookingLists`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

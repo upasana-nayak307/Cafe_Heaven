@@ -25,6 +25,7 @@ export default function UserProfileCard() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const API=import.meta.env.VITE_BACKEND_URL;
 
   // Form State & Errors
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', avatarUrl: '', role: 'admin' });
@@ -134,7 +135,7 @@ export default function UserProfileCard() {
     );
   }
 
-  const defaultAvatar = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=256";
+  // const defaultAvatar = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=256";
   const userRoleFormatted = userData?.role === 'manager' ? 'Store Manager' : 'Administrator';
 
   return (
@@ -158,7 +159,7 @@ export default function UserProfileCard() {
           <div className="flex justify-between items-end -mt-16 mb-4">
             <div className="relative">
               <img
-                src={userData?.avatarUrl || defaultAvatar}
+                src={userData?.avatarUrl}
                 alt={userData?.name}
                 className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover ring-4 ring-white shadow-md bg-slate-100"
               />
@@ -276,7 +277,7 @@ export default function UserProfileCard() {
                 <div className="flex flex-col items-center justify-center mb-2">
                   <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                     <img
-                      src={formData.avatarUrl || defaultAvatar}
+                      src={formData.avatarUrl}
                       alt="Profile Preview"
                       className="w-20 h-20 rounded-full object-cover ring-2 ring-[#0A4D8C]/20"
                     />
