@@ -1,6 +1,8 @@
 const mongoose=require("mongoose");
+require("dotenv").config();
+const API=process.env.MONGO_URL;
 async function main() {
-    await mongoose.connect("mongodb://127.0.0.1:27017/CafeHeaven");
+    await mongoose.connect(`${API}/CafeHeaven`);
 }
 main().then(()=>{
     console.log("Database is connected");
@@ -8,4 +10,3 @@ main().then(()=>{
 .catch(()=>{
     console.log("Database is not connected");
 })
-
