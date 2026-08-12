@@ -84,7 +84,7 @@ export default function AddItemForm({ onClose, editItem }) {
     try {
       if (editItem) {
         const update = await axios.put(
-          `${API}/updateItem/${editItem._id}`,
+          `${API}/api/updateItem/${editItem._id}`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );

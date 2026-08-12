@@ -9,8 +9,12 @@ import {
 } from 'lucide-react';
 import { io } from "socket.io-client";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-const socket = io(import.meta.env.PORT);
+const socket = io(BACKEND_URL, {
+  transports: ["websocket"],
+  withCredentials: true,
+});
 
 export default function NotificationPanel({ isOpen, setIsOpen }) {
   // ✅ 1. ALL HOOKS MUST RUN AT THE TOP LEVEL

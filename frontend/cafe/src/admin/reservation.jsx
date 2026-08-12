@@ -87,7 +87,7 @@ export default function ReservationsPage() {
   
   const updateStatus=async (id,status) => {
     try {
-      const res=await axios.put(`${API}/updateBookingData/${id}`,{status:status});
+      const res=await axios.put(`${API}/api/updateBookingData/${id}`,{status:status});
       console.log(res.data);
     } catch (error) {
       console.log(error);
@@ -98,7 +98,7 @@ export default function ReservationsPage() {
   }
   const updateTable=async(id,tableNo)=>{
     try {
-      const res=await axios.put(`${API}/updateBookingData/${id}`,{tableNumber:tableNo});
+      const res=await axios.put(`${API}/api/updateBookingData/${id}`,{tableNumber:tableNo});
       console.log(res.data);
     } catch (error) {
       console.log(error);

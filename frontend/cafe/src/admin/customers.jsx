@@ -64,7 +64,7 @@ export default function CustomerManagement() {
 
   const handleCustomerType=async (id,customerType)=>{
     try {
-      const res=await axios.put(`${API}/updateBookingData/${id}`,{customerType:customerType});
+      const res=await axios.put(`${API}/api/updateBookingData/${id}`,{customerType:customerType});
       console.log(res.data);
       setBookings((prevItem)=>
         prevItem.map((item)=>item._id===id ? {...item,customerType} : item)

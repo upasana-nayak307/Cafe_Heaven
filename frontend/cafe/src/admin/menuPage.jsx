@@ -15,7 +15,7 @@ export default function MenuPage() {
 
   const fetchMenuData = async () => {
     try {
-      const res = await axios.get(`${API}/allItems`);
+      const res = await axios.get(`${API}/api/allItems`);
       console.log(res.data.allItems);
       setMenuItems(res.data.allItems);
     } catch (error) {
@@ -50,7 +50,7 @@ export default function MenuPage() {
 
   const handleDeleteItem = async (id) => {
     try {
-      await axios.delete(`${API}/deleteItem/${id}`);
+      await axios.delete(`${API}/api/deleteItem/${id}`);
       fetchMenuData();
     } catch (error) {
       console.log("FULL ERR: ", error);

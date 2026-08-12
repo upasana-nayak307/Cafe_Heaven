@@ -65,7 +65,7 @@ export default function BookTableDialog({ isOpen, onClose,setBookings }) {
     setErrorMsg({});
     try {
       console.log(formData);
-      const res=await axios.post(`${API}/bookingData`,formData);
+      const res=await axios.post(`${API}/api/bookingData`,formData);
       console.log(res.data);
       if(typeof setBookings==="function"){
       setBookings((prev)=>[...prev, res.data.bookingList]);
