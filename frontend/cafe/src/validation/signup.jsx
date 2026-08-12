@@ -8,6 +8,7 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState({});
   const [successMsg, setSuccessMsg] = useState('');
+  const API=import.meta.env.VITE_BACKEND_URL;
 
   const [formData, setFormData] = useState({
     name: '',
@@ -61,7 +62,7 @@ export default function Signup() {
     }
 
     try {
-      const res = await axios.post('http://localhost:8080/api/signup', formData);
+      const res = await axios.post(`${API}/api/signup`, formData);
       console.log(res.data);
       if (res.data.token) {
         localStorage.setItem('adminToken', res.data.token);

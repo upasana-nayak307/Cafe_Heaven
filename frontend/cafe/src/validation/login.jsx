@@ -8,6 +8,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState({});
   const [successMsg, setSuccessMsg] = useState('');
+  const API=import.meta.env.VITE_BACKEND_URL;
 
   const [formData, setFormData] = useState({
     email: '',
@@ -45,7 +46,7 @@ export default function Login() {
     }
 
     try {
-      const res = await axios.post('http://localhost:8080/api/login', formData);
+      const res = await axios.post(`${API}/api/login`, formData);
 
       if (res.data.token) {
         localStorage.setItem('adminToken', res.data.token);
