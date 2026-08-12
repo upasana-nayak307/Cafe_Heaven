@@ -39,6 +39,8 @@ export default function AdminLayout() {
             Authorization: `Bearer ${token}`
           }
         });
+        console.log("🔥 API VALUE:", API);
+        console.log("🔥 FINAL URL:", `${API}/api/bookingLists`);
         setBookings(res.data);
       } catch (error) {
         console.log("Facing issue in fetching: ", error);
