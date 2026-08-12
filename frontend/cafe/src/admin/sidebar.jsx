@@ -154,7 +154,7 @@ export default function Sidebar({ onClose }) {
       {/* DYNAMIC BOTTOM PROFILE */}
       <div className="p-4 border-t border-gray-100 flex items-center gap-3 bg-white">
         <img
-          src={userData?.avatarUrl || defaultAvatar}
+          src={userData?.avatarUrl}
           alt={userData?.name || "Admin"}
           className="w-10 h-10 rounded-full object-cover shrink-0 ring-2 ring-slate-100"
         />
