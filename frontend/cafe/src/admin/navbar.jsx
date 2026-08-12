@@ -1,7 +1,7 @@
 import { Search, Bell, Menu, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import NotificationPanel from "./notification";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -14,28 +14,33 @@ const socket = io(BACKEND_URL, {
 export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const isInitialMount = useRef(true);
 
-  // 1. Initialize state from localStorage (or fallback to empty array)
+  // 1. Initialize State SAFELY from LocalStorage
   const [notifications, setNotifications] = useState(() => {
     try {
       const saved = localStorage.getItem("cafe_notifications");
       return saved ? JSON.parse(saved) : [];
     } catch (error) {
-      console.error("Error reading notifications from localStorage:", error);
+      console.error("Error reading notifications:", error);
       return [];
     }
   });
 
-  // 2. Save notifications to localStorage whenever state updates
+  // 2. Save to LocalStorage ONLY AFTER Initial Mount
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     try {
       localStorage.setItem("cafe_notifications", JSON.stringify(notifications));
     } catch (error) {
-      console.error("Error saving notifications to localStorage:", error);
+      console.error("Error saving notifications:", error);
     }
   }, [notifications]);
 
-  // 3. Listen for Socket events
+  // 3. Register Socket Handlers (Uses functional state setter)
   useEffect(() => {
     const handleNewBooking = (data) => {
       const newNotification = {
@@ -46,7 +51,12 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
         read: false,
         type: "booking",
       };
-      setNotifications((prev) => [newNotification, ...prev]);
+
+      setNotifications((prev) => {
+        const updated = [newNotification, ...prev];
+        localStorage.setItem("cafe_notifications", JSON.stringify(updated));
+        return updated;
+      });
     };
 
     const handleCancelledBooking = (data) => {
@@ -58,7 +68,12 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
         read: false,
         type: "cancelled",
       };
-      setNotifications((prev) => [newNotification, ...prev]);
+
+      setNotifications((prev) => {
+        const updated = [newNotification, ...prev];
+        localStorage.setItem("cafe_notifications", JSON.stringify(updated));
+        return updated;
+      });
     };
 
     socket.on("new-booking", handleNewBooking);
@@ -140,10 +155,8 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
           </div>
         </div>
 
-        {/* DIVIDER */}
         <div className="h-6 sm:h-8 w-px bg-gray-200"></div>
 
-        {/* STATUS */}
         <a
           href="https://www.zomato.com/bhubaneswar/the-cafe-heaven-gajapati-nagar-bhubaneshwar"
           className="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-800 rounded-lg border border-amber-200 hidden sm:inline-block"
