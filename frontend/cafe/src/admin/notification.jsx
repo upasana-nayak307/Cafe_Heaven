@@ -14,15 +14,26 @@ export default function NotificationPanel({
   notifications = [], 
   setNotifications 
 }) {
-  const handleMarkAllRead = () => {
-    if (typeof setNotifications === 'function') {
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const handleMarkAllRead = async () => {
+    try {
+      await fetch(`${BACKEND_URL}/api/notifications/mark-read`, { method: "PATCH" });
+      if (typeof setNotifications === "function") {
+        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      }
+    } catch (err) {
+      console.error("Failed to mark all as read:", err);
     }
   };
 
-  const handleClearAll = () => {
-    if (typeof setNotifications === 'function') {
-      setNotifications([]);
+  const handleClearAll = async () => {
+    try {
+      await fetch(`${BACKEND_URL}/api/notifications`, { method: "DELETE" });
+      if (typeof setNotifications === "function") {
+        setNotifications([]);
+      }
+    } catch (err) {
+      console.error("Failed to clear notifications:", err);
     }
   };
 

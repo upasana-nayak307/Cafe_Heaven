@@ -1,7 +1,7 @@
 import { Search, Bell, Menu, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import NotificationPanel from "./notification";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -14,66 +14,55 @@ const socket = io(BACKEND_URL, {
 export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const isInitialMount = useRef(true);
+  const [notifications, setNotifications] = useState([]);
 
-  // 1. Initialize State SAFELY from LocalStorage
-  const [notifications, setNotifications] = useState(() => {
-    try {
-      const saved = localStorage.getItem("cafe_notifications");
-      return saved ? JSON.parse(saved) : [];
-    } catch (error) {
-      console.error("Error reading notifications:", error);
-      return [];
-    }
-  });
-
-  // 2. Save to LocalStorage ONLY AFTER Initial Mount
+  // 1. Fetch persistent notifications from backend on page load
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    try {
-      localStorage.setItem("cafe_notifications", JSON.stringify(notifications));
-    } catch (error) {
-      console.error("Error saving notifications:", error);
-    }
-  }, [notifications]);
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/notifications`, {
+          headers: {
+            // Include auth headers/tokens if your admin routes are protected
+            Authorization: `Bearer ${localStorage.getItem("admin_token") || ""}`,
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch");
+        const data = await response.json();
+        setNotifications(data);
+      } catch (error) {
+        console.error("Error fetching notifications from server:", error);
+      }
+    };
 
-  // 3. Register Socket Handlers
+    fetchNotifications();
+  }, []);
+
+  // 2. Listen for real-time WebSocket events while the tab is open
   useEffect(() => {
     const handleNewBooking = (data) => {
       const newNotification = {
-        id: Date.now(),
+        id: data._id || data.id || Date.now(),
         title: "New Reservation",
         message: `Table ${data.tableNumber || "-"} booked by ${data.name || "Guest"}`,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         read: false,
         type: "booking",
       };
 
-      setNotifications((prev) => {
-        const updated = [newNotification, ...prev];
-        localStorage.setItem("cafe_notifications", JSON.stringify(updated));
-        return updated;
-      });
+      setNotifications((prev) => [newNotification, ...prev]);
     };
 
     const handleCancelledBooking = (data) => {
       const newNotification = {
-        id: Date.now(),
+        id: data._id || data.id || Date.now(),
         title: "Booking Cancelled",
         message: data.message || "A reservation was cancelled.",
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         read: false,
         type: "cancelled",
       };
 
-      setNotifications((prev) => {
-        const updated = [newNotification, ...prev];
-        localStorage.setItem("cafe_notifications", JSON.stringify(updated));
-        return updated;
-      });
+      setNotifications((prev) => [newNotification, ...prev]);
     };
 
     socket.on("new-booking", handleNewBooking);

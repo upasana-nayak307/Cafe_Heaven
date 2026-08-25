@@ -10,6 +10,7 @@ require("./model/db");
 const bookingRoutes = require("./routes/bookingTableRoute");
 const menuRoutes = require("./routes/menuRoute");
 const authRoutes = require("./routes/authRoutes");
+const notificationRoutes=require("./routes/notificationRoute");
 
 // 1. Allowed origins
 const allowedOrigins = [
@@ -24,41 +25,25 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (Postman/Curl) or if listed in allowedOrigins
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        callback(null, false);
       }
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["*"], // Allows all headers including Authorization, x-auth-token, token
-    optionsSuccessStatus: 200,
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-auth-token",
+      "token"
+    ],
   })
 );
 
 // 3. Fallback Preflight & Header Fix
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization, token, x-auth-token"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-  next();
-});
+app.options("*", cors());
 
 // 4. Body Parsing
 app.use(express.json({ limit: "25mb" }));
@@ -85,6 +70,7 @@ app.set("io", io);
 app.use("/api", bookingRoutes);
 app.use("/api", menuRoutes);
 app.use("/api", authRoutes);
+app.use("/api",notificationRoutes);
 
 // 7. Global Error Handler
 app.use((err, req, res, next) => {

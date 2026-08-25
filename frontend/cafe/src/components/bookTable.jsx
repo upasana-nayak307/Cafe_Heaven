@@ -285,7 +285,7 @@ return (
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="your.email@example.com"
+                  placeholder="Enter your name"
                   className={`w-full rounded-2xl border px-5 py-3 outline-none transition focus:ring-2
                     ${errorMsg.email 
                       ? "border-rose-400 focus:border-rose-500 bg-rose-50 focus:ring-rose-200" 

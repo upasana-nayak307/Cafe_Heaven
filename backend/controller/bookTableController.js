@@ -1,5 +1,5 @@
 const BookTable=require("../model/bookTable");
-
+const Notification=require("../model/notification");
 // for get
 const getUser=async (req,res) => {
     try {
@@ -62,13 +62,27 @@ const postUser=async (req,res) => {
             bookingTime,
             guests
         });
+        const currentTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+        // 1. Save notification to database so closed tabs don't lose it
+        const newNotification = await Notification.create({
+        title: "New Reservation",
+        message: `${guests} guests booked by ${name} for ${bookingTime}`,
+        type: "booking",
+        read: false,
+        time: currentTime,
+        });
+
+        // 2. Emit the saved notification document
         const io = req.app.get("io");
-        io.emit("new-booking", bookingList);
+        if(io){
+            io.emit("new-booking", newNotification);
+        }
         res.status(201).json({
             message:"Message received",
             success:true,
             bookingList
-        })
+        });
     } catch (err) {
         console.log("FULL ERROR:",err);
         res.status(500).json({ error: err.message });
@@ -89,12 +103,20 @@ const updateUser = async (req, res) => {
         }
 
         if (req.body.status === "cancelled") {
-            const io = req.app.get("io");
+            const currentTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-            io.emit("booking-cancelled", {
+            // Save cancellation notification to DB
+            const cancelledNotification = await Notification.create({
+                title: "Booking Cancelled",
                 message: `Booking cancelled for ${updatedUser.name}`,
-                type: "cancelled"
+                type: "cancelled",
+                read: false,
+                time: currentTime,
             });
+            const io = req.app.get("io");
+            if (io) {
+                io.emit("booking-cancelled", cancelledNotification);
+            }
         }
 
         res.status(200).json(updatedUser);

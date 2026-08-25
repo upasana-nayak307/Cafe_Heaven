@@ -7,13 +7,17 @@ const authMiddleware = (req, res, next) => {
     return next();
   }
 
-  const authHeader = req.headers.authorization || req.header("Authorization") || req.header("token") || req.header("x-auth-token");
+  const authHeader =
+  req.headers.authorization ||
+  req.headers["x-auth-token"] ||
+  req.headers.token;
 
   if (!authHeader) {
     return res.status(401).json({ message: "No token provided" });
   }
 
-  const token = authHeader.startsWith("Bearer ")
+  const token =
+  authHeader.startsWith("Bearer ")
     ? authHeader.split(" ")[1]
     : authHeader;
 
