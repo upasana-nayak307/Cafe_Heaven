@@ -233,7 +233,7 @@ export default function MenuPage() {
                     <th className="py-4 px-6 text-center">Price</th>
                     <th className="py-4 px-6 text-center">Status</th>
                     <th className="py-4 px-6 text-center">Availability</th>
-                    <th className="py-4 px-6 text-center">Type</th>
+                    <th className="py-4 px-6 text-left">Type</th>
                     <th className="py-4 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -278,9 +278,9 @@ export default function MenuPage() {
                         </div>
                       </td>
                       {/* TYPE COLUMN: Centered with aligned badge contents */}
-                      <td className="py-4 px-6 text-center">
+                      <td className="py-4 px-6 text-left">
                         {item.type && (
-                          <div className="inline-flex items-center gap-2 w-24 text-left">
+                          <div className="flex items-center gap-2">
                             <span
                               className={`w-3.5 h-3.5 border-[1.5px] ${
                                 item.type.toLowerCase() === "veg"
