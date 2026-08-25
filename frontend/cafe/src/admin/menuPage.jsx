@@ -232,7 +232,7 @@ export default function MenuPage() {
                     <th className="py-4 px-6 text-center">Price</th>
                     <th className="py-4 px-6 text-center">Status</th>
                     <th className="py-4 px-6 text-center">Availability</th>
-                    <th className="py-4 px-6 text-left">Type</th>
+                    <th className="py-4 px-6 text-center">Type</th>
                     <th className="py-4 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
