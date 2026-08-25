@@ -15,7 +15,7 @@ const authRoutes = require("./routes/authRoutes");
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
-  "https://cafe-heaven-red.vercel.app",
+  "https://dailycafe-portal.vercel.app",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
