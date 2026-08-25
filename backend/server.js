@@ -10,7 +10,7 @@ require("./model/db");
 const bookingRoutes = require("./routes/bookingTableRoute");
 const menuRoutes = require("./routes/menuRoute");
 const authRoutes = require("./routes/authRoutes");
-const notificationRoutes=require("./routes/notificationRoute");
+const notificationRoutes = require("./routes/notificationRoute");
 
 // 1. Allowed origins
 const allowedOrigins = [
@@ -21,7 +21,7 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
-// 2. Permissive CORS Middleware
+// 2. CORS Middleware (handles regular requests + automatic preflights)
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -37,19 +37,16 @@ app.use(
       "Content-Type",
       "Authorization",
       "x-auth-token",
-      "token"
+      "token",
     ],
   })
 );
 
-// 3. Fallback Preflight & Header Fix
-app.options("*", cors());
-
-// 4. Body Parsing
+// 3. Body Parsing
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ limit: "25mb", extended: true }));
 
-// 5. Server & Socket.IO
+// 4. Server & Socket.IO
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -66,19 +63,19 @@ io.on("connection", (socket) => {
 
 app.set("io", io);
 
-// 6. Routes
+// 5. Routes
 app.use("/api", bookingRoutes);
 app.use("/api", menuRoutes);
 app.use("/api", authRoutes);
-app.use("/api",notificationRoutes);
+app.use("/api", notificationRoutes);
 
-// 7. Global Error Handler
+// 6. Global Error Handler
 app.use((err, req, res, next) => {
   console.error("Global Error Handler:", err.stack);
   res.status(500).json({ message: err.message || "Internal Server Error" });
 });
 
-// 8. Start Server
+// 7. Start Server
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
