@@ -48,9 +48,7 @@ export default function UserProfileCard() {
       setLoading(true);
       const res = await axios.get(`${API}/api/profile`, {
         headers: { 
-          Authorization: `Bearer ${token}`,
-          token: token,
-          'x-auth-token': token
+          Authorization: `Bearer ${token}`
         }
       });
 
@@ -107,7 +105,6 @@ export default function UserProfileCard() {
   };
 
   // Handle Form Submit
-  // Handle Form Submit
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -119,9 +116,7 @@ export default function UserProfileCard() {
     try {
       const res = await axios.put(`${API}/api/profile`, formData, {
         headers: { 
-          Authorization: `Bearer ${token}`,
-          token: token,
-          'x-auth-token': token
+          Authorization: `Bearer ${token}`
         }
       });
 

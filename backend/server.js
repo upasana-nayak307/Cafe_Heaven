@@ -11,7 +11,7 @@ const bookingRoutes = require("./routes/bookingTableRoute");
 const menuRoutes = require("./routes/menuRoute");
 const authRoutes = require("./routes/authRoutes");
 
-// 1. Allowed origins configuration
+// 1. Allowed origins
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
@@ -20,37 +20,51 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, or Postman)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(null, false);
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "token",
-    "x-auth-token",
-    "X-Requested-With",
-    "Accept"
-  ],
-  optionsSuccessStatus: 200,
-};
+// 2. Permissive CORS Middleware
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (Postman/Curl) or if listed in allowedOrigins
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["*"], // Allows all headers including Authorization, x-auth-token, token
+    optionsSuccessStatus: 200,
+  })
+);
 
-// 2. Enable CORS middleware & preflight globally
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+// 3. Fallback Preflight & Header Fix
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization, token, x-auth-token"
+  );
 
-// 3. Body Parsing Middleware (Increased for Base64 profile photos)
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  next();
+});
+
+// 4. Body Parsing
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ limit: "25mb", extended: true }));
 
-// 4. Create Server & WebSockets
+// 5. Server & Socket.IO
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -67,18 +81,18 @@ io.on("connection", (socket) => {
 
 app.set("io", io);
 
-// 5. Routes
+// 6. Routes
 app.use("/api", bookingRoutes);
 app.use("/api", menuRoutes);
 app.use("/api", authRoutes);
 
-// 6. Global Error Handler
+// 7. Global Error Handler
 app.use((err, req, res, next) => {
   console.error("Global Error Handler:", err.stack);
   res.status(500).json({ message: err.message || "Internal Server Error" });
 });
 
-// 7. Start Server
+// 8. Start Server
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
