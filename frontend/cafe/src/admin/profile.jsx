@@ -107,6 +107,7 @@ export default function UserProfileCard() {
   };
 
   // Handle Form Submit
+  // Handle Form Submit
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -129,10 +130,16 @@ export default function UserProfileCard() {
         setIsEditing(false);
       }
     } catch (error) {
+      console.error('Update profile error response:', error.response?.data);
+
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else {
-        setServerMsg(error.response?.data?.message || 'Failed to update profile');
+        const errorText = 
+          error.response?.data?.message || 
+          error.response?.data?.error || 
+          'Failed to update profile. Please try again.';
+        setServerMsg(errorText);
       }
     } finally {
       setSaving(false);

@@ -2,10 +2,10 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const Admin = require("../model/adminData");
 
-const JWT_SECRET = "Secret1234";
+const JWT_SECRET = process.env.JWT_SECRET;
 
-const emailRegex = /\S+@\S+\.\S+/;
-const indianPhoneRegex = /^(?:(?:\+|00)91[\s-]*)?[6-9]\d{9}$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const indianPhoneRegex = /^[6-9]\d{9}$/;
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
 
 const signUp = async (req, res) => {
@@ -144,18 +144,21 @@ const updateProfile = async (req, res) => {
   const { name, email, phone, avatarUrl, role } = req.body;
   let errors = {};
 
-  if (!name) errors.name = "Enter name";
+  if (!name || !name.trim()) errors.name = "Enter name";
 
-  if (!email) {
+  if (!email || !email.trim()) {
     errors.email = "Enter email";
-  } else if (!emailRegex.test(email)) {
-    errors.email = "Invalid email";
+  } else if (!emailRegex.test(email.trim())) {
+    errors.email = "Invalid email format";
   }
 
-  if (!phone) {
-    errors.phone = "Enter phone";
-  } else if (!indianPhoneRegex.test(phone)) {
-    errors.phone = "Invalid phone";
+  // Sanitize phone (remove +91, spaces, dashes if present)
+  const cleanedPhone = phone ? phone.toString().replace(/\D/g, '').slice(-10) : '';
+
+  if (!cleanedPhone) {
+    errors.phone = "Enter phone number";
+  } else if (!indianPhoneRegex.test(cleanedPhone)) {
+    errors.phone = "Enter a valid 10-digit mobile number";
   }
 
   // Validate role enum
@@ -168,24 +171,47 @@ const updateProfile = async (req, res) => {
   }
 
   try {
-    const emailExists = await Admin.findOne({ email, _id: { $ne: req.user.id } });
+    const userId = req.user?.id || req.user?._id || req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Invalid session or user ID missing from token." });
+    }
+
+    const emailExists = await Admin.findOne({ 
+      email: email.trim(), 
+      _id: { $ne: userId } 
+    });
+
     if (emailExists) {
-      return res.status(400).json({ errors: { email: "Email already registered by another account" } });
+      return res.status(400).json({ 
+        errors: { email: "Email already registered by another account" } 
+      });
     }
 
     const updatedAdmin = await Admin.findByIdAndUpdate(
-      req.user.id,
-      { name, email, phone, avatarUrl, role: role || "admin" },
+      userId,
+      { 
+        name: name.trim(), 
+        email: email.trim(), 
+        phone: cleanedPhone, 
+        avatarUrl, 
+        role: role || "admin" 
+      },
       { new: true, runValidators: true }
     ).select("-password");
 
-    res.json({
+    if (!updatedAdmin) {
+      return res.status(404).json({ message: "Admin user not found" });
+    }
+
+    return res.status(200).json({
       message: "Profile updated successfully",
       success: true,
       user: updatedAdmin
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("updateProfile Error:", error);
+    return res.status(500).json({ message: error.message || "Internal server error" });
   }
 };
 module.exports = { signUp,logIn,getProfile,updateProfile };
