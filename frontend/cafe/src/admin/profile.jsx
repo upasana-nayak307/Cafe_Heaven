@@ -25,7 +25,7 @@ export default function UserProfileCard() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const API=import.meta.env.VITE_BACKEND_URL;
+  const API = import.meta.env.VITE_BACKEND_URL;
 
   // Form State & Errors
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', avatarUrl: '', role: 'admin' });
@@ -47,24 +47,32 @@ export default function UserProfileCard() {
     try {
       setLoading(true);
       const res = await axios.get(`${API}/api/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          token: token,
+          'x-auth-token': token
+        }
       });
 
-      if (res.data.user) {
-        setUserData(res.data.user);
+      const user = res.data.user || res.data;
+      if (user) {
+        setUserData(user);
         setFormData({
-          name: res.data.user.name || '',
-          email: res.data.user.email || '',
-          phone: res.data.user.phone || '',
-          avatarUrl: res.data.user.avatarUrl || '',
-          role: res.data.user.role || 'admin'
+          name: user.name || '',
+          email: user.email || '',
+          phone: user.phone || '',
+          avatarUrl: user.avatarUrl || '',
+          role: user.role || 'admin'
         });
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
-      if (error.response?.status === 401) {
-        localStorage.removeItem('adminToken');
-        navigate('/login');
+      console.error('Backend response message:', error.response?.data);
+
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        setServerMsg(error.response?.data?.message || 'Authentication session invalid. Please log in again.');
+      } else {
+        setServerMsg('Failed to connect to backend server. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -109,11 +117,15 @@ export default function UserProfileCard() {
 
     try {
       const res = await axios.put(`${API}/api/profile`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          token: token,
+          'x-auth-token': token
+        }
       });
 
-      if (res.data.success) {
-        setUserData(res.data.user);
+      if (res.data.success || res.data.user) {
+        setUserData(res.data.user || formData);
         setIsEditing(false);
       }
     } catch (error) {
@@ -135,7 +147,6 @@ export default function UserProfileCard() {
     );
   }
 
-  // const defaultAvatar = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=256";
   const userRoleFormatted = userData?.role === 'manager' ? 'Store Manager' : 'Administrator';
 
   return (
@@ -143,9 +154,16 @@ export default function UserProfileCard() {
       <div className="w-full max-w-md bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/60 overflow-hidden relative">
         
         {/* Banner Header */}
-        <div className="h-32 bg-gradient-to-r from-[#0A4D8C] via-[#083c6e] to-[#0A4D8C] relative p-4 flex justify-end items-start">
+        <div className="h-32 bg-gradient-to-r from-[#0A4D8C] via-[#083c6e] to-[#0A4D8C] relative p-4 flex justify-between items-start">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(109,190,69,0.25),transparent_50%)]" />
           
+          <button
+            onClick={() => navigate('/admin')}
+            className="relative z-10 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-md bg-white/15 text-white border border-white/20 hover:bg-white/25 transition cursor-pointer"
+          >
+            ← Back to Admin
+          </button>
+
           <span className="relative z-10 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md bg-white/15 text-white border border-white/20 shadow-xs">
             {userData?.role === 'manager' ? <UserCheck className="w-3.5 h-3.5 text-[#6DBE45]" /> : <ShieldCheck className="w-3.5 h-3.5 text-[#6DBE45]" />}
             {userRoleFormatted}
@@ -159,8 +177,8 @@ export default function UserProfileCard() {
           <div className="flex justify-between items-end -mt-16 mb-4">
             <div className="relative">
               <img
-                src={userData?.avatarUrl}
-                alt={userData?.name}
+                src={userData?.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=256"}
+                alt={userData?.name || "Admin"}
                 className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover ring-4 ring-white shadow-md bg-slate-100"
               />
               <span className="absolute bottom-1 right-1 w-5 h-5 bg-[#6DBE45] border-2 border-white rounded-full flex items-center justify-center shadow-xs" title="Active">
@@ -190,14 +208,22 @@ export default function UserProfileCard() {
           <div className="space-y-1 mb-6">
             <div className="flex items-center gap-2">
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                {userData?.name}
+                {userData?.name || 'Admin User'}
               </h2>
               <ShieldCheck className="w-5 h-5 text-[#0A4D8C]" />
             </div>
             <p className="text-xs text-slate-500 font-medium flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" /> Member since {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'August 2024'}
+              <Calendar className="w-3.5 h-3.5" /> Member since {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'August 2026'}
             </p>
           </div>
+
+          {/* Server Error / Warning Notice */}
+          {serverMsg && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+              <span className="flex-1">{serverMsg}</span>
+            </div>
+          )}
 
           {/* Information Cards List */}
           <div className="space-y-3">
@@ -207,7 +233,7 @@ export default function UserProfileCard() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Email Address</p>
-                <p className="text-sm font-semibold text-slate-800 truncate">{userData?.email}</p>
+                <p className="text-sm font-semibold text-slate-800 truncate">{userData?.email || 'N/A'}</p>
               </div>
             </div>
 
@@ -217,7 +243,7 @@ export default function UserProfileCard() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Phone Number</p>
-                <p className="text-sm font-semibold text-slate-800 truncate">{userData?.phone}</p>
+                <p className="text-sm font-semibold text-slate-800 truncate">{userData?.phone || 'N/A'}</p>
               </div>
             </div>
 
@@ -264,20 +290,12 @@ export default function UserProfileCard() {
                 </button>
               </div>
 
-              {serverMsg && (
-                <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs font-medium">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  {serverMsg}
-                </div>
-              )}
-
               <form onSubmit={handleUpdateProfile} className="space-y-4">
-                
                 {/* Photo Upload Picker */}
                 <div className="flex flex-col items-center justify-center mb-2">
                   <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                     <img
-                      src={formData.avatarUrl}
+                      src={formData.avatarUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=256"}
                       alt="Profile Preview"
                       className="w-20 h-20 rounded-full object-cover ring-2 ring-[#0A4D8C]/20"
                     />
