@@ -145,7 +145,8 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
             />
           )}
 
-          <div className="absolute right-0 top-full mt-2 z-50">
+          {/* Fixed responsive positioning: fits viewport on mobile and pins to right edge on desktop */}
+          <div className="fixed sm:absolute top-16 sm:top-full left-3 right-3 sm:left-auto sm:right-0 mt-2 z-50 flex justify-center sm:block">
             <NotificationPanel
               isOpen={open}
               setIsOpen={setOpen}

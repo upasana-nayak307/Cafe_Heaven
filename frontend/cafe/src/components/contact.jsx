@@ -82,14 +82,14 @@ const Contact = () => {
                   <HiPhone className="w-6 h-6 text-[#0A4D8C] flex-shrink-0 mt-1" />
                   <div>
                     <p className="font-semibold text-[#05223D] mb-1">Phone</p>
-                    <p className="text-[#4A5568]">+91 9876543210</p>
+                    <p className="text-[#4A5568]">+91 987654xxxx</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <HiMail className="w-6 h-6 text-[#0A4D8C] flex-shrink-0 mt-1" />
                   <div>
                     <p className="font-semibold text-[#05223D] mb-1">Email</p>
-                    <p className="text-[#4A5568]">hello@cafeheaven.com</p>
+                    <p className="text-[#4A5568]">hello@dailycafe.com</p>
                   </div>
                 </div>
               </div>
