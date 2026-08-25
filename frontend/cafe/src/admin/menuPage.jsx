@@ -11,27 +11,26 @@ export default function MenuPage() {
   const [open, setOpen] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
   const [editItem, setEditItem] = useState(null);
-  const API=import.meta.env.VITE_BACKEND_URL;
+  const API = import.meta.env.VITE_BACKEND_URL;
 
   const fetchMenuData = async () => {
     try {
       const res = await axios.get(`${API}/api/allItems`);
-      console.log(res.data.allItems);
-      setMenuItems(res.data.allItems);
+      setMenuItems(res.data.allItems || []);
     } catch (error) {
       console.log("FULL ERR: ", error);
     }
-  }
-  
+  };
+
   useEffect(() => {
     fetchMenuData();
-  }, [])
+  }, []);
 
   const toggle = async (id, currentStatus) => {
     // updating the UI changes
     setMenuItems((prevItem) =>
       prevItem.map((item) => item._id === id ? { ...item, available: !item.available } : item)
-    )
+    );
 
     // sending the changes to backend
     try {
@@ -39,9 +38,11 @@ export default function MenuPage() {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  const filteredMenuItems = selectedCategory === "All" ? menuItems : menuItems.filter((items) => items.category === selectedCategory);
+  const filteredMenuItems = selectedCategory === "All" 
+    ? menuItems 
+    : menuItems.filter((item) => item.category === selectedCategory);
 
   const handleEdit = async (item) => {
     setEditItem(item);
@@ -55,13 +56,13 @@ export default function MenuPage() {
     } catch (error) {
       console.log("FULL ERR: ", error);
     }
-  }
+  };
 
   const toTitleCase = (text) => {
     return text
       ?.trim()
       .toLowerCase()
-      .split(/\s+/) // handles multiple spaces
+      .split(/\s+/)
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
@@ -83,8 +84,8 @@ export default function MenuPage() {
         <button 
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#0A4D8C] text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-medium hover:bg-[#083d70] active:scale-[0.98] transition-all text-sm sm:text-base shadow-sm cursor-pointer" 
           onClick={() => {
-            setOpen(true)
-            setEditItem(null)
+            setOpen(true);
+            setEditItem(null);
           }}
         >
           <Plus size={18} />
@@ -142,10 +143,10 @@ export default function MenuPage() {
                       {item.type && (
                         <span
                           className={`w-3.5 h-3.5 border-[1.5px] ${
-                            item.type === "veg" ? "border-emerald-600" : "border-rose-600"
+                            item.type.toLowerCase() === "veg" ? "border-emerald-600" : "border-rose-600"
                           } flex items-center justify-center rounded-[2px] shrink-0 bg-white`}
                         >
-                          {item.type === "veg" ? (
+                          {item.type.toLowerCase() === "veg" ? (
                             <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full" />
                           ) : (
                             <span className="w-0 h-0 border-l-[2px] border-l-transparent border-r-[2px] border-r-transparent border-b-[4px] border-b-rose-600" />
@@ -248,7 +249,9 @@ export default function MenuPage() {
                           {item.category}
                         </span>
                       </td>
-                      <td className={`p-4 font-medium ${item.available ? "text-gray-900" : "text-gray-400 line-through"} text-center`}>₹{item.price}</td>
+                      <td className={`p-4 font-medium ${item.available ? "text-gray-900" : "text-gray-400 line-through"} text-center`}>
+                        ₹{item.price}
+                      </td>
                       <td className="p-4 text-center">
                         {item.available ? (
                           <span className="inline-flex items-center gap-1 bg-green-50 text-[#6DBE45] px-2.5 py-1 rounded-full text-xs font-semibold border border-green-200">
@@ -274,9 +277,10 @@ export default function MenuPage() {
                           />
                         </div>
                       </td>
-                      <td className="py-4 px-6 text-left">
+                      {/* TYPE COLUMN: Centered with aligned badge contents */}
+                      <td className="py-4 px-6 text-center">
                         {item.type && (
-                          <div className="flex items-center gap-2">
+                          <div className="inline-flex items-center gap-2 w-24 text-left">
                             <span
                               className={`w-3.5 h-3.5 border-[1.5px] ${
                                 item.type.toLowerCase() === "veg"
@@ -291,9 +295,9 @@ export default function MenuPage() {
                               )}
                             </span>
 
-                            <p className="text-sm font-medium capitalize text-gray-700">
+                            <span className="text-sm font-medium capitalize text-gray-700">
                               {item.type}
-                            </p>
+                            </span>
                           </div>
                         )}
                       </td>
