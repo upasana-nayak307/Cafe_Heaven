@@ -11,11 +11,12 @@ const bookingRoutes = require("./routes/bookingTableRoute");
 const menuRoutes = require("./routes/menuRoute");
 const authRoutes = require("./routes/authRoutes");
 
-// 1. Allowed origins configuration (Only frontend clients)
+// 1. Allowed origins configuration (Included both old & new Vercel domains)
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://dailycafe-portal.vercel.app",
+  "https://cafe-heaven-red.vercel.app",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -25,7 +26,7 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(null, false); // Return false instead of throwing Error to prevent preflight crash
     }
   },
   credentials: true,
@@ -34,8 +35,9 @@ const corsOptions = {
   optionsSuccessStatus: 200,
 };
 
-// 2. Enable CORS middleware
+// 2. Enable CORS middleware & handle Preflight across all routes
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // 3. Body Parsing Middleware
 app.use(express.json({ limit: "10mb" }));
@@ -66,12 +68,6 @@ app.use("/api", authRoutes);
 // 6. Global Error Handler
 app.use((err, req, res, next) => {
   console.error("Global Error Handler:", err.stack);
-  
-  // Handle CORS errors specifically
-  if (err.message === "Not allowed by CORS") {
-    return res.status(403).json({ message: "CORS origin blocked" });
-  }
-
   res.status(500).json({ message: err.message || "Internal Server Error" });
 });
 
