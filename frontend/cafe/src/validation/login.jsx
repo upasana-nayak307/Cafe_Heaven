@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, ShieldCheck, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ShieldCheck, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
 export default function Login() {
@@ -8,7 +8,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState({});
   const [successMsg, setSuccessMsg] = useState('');
-  const API=import.meta.env.VITE_BACKEND_URL;
+  const [isLoading, setIsLoading] = useState(false);
+  const API = import.meta.env.VITE_BACKEND_URL;
 
   const [formData, setFormData] = useState({
     email: '',
@@ -17,8 +18,8 @@ export default function Login() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (errorMsg[e.target.name]) {
-      setErrorMsg((prev) => ({ ...prev, [e.target.name]: null }));
+    if (errorMsg[e.target.name] || errorMsg.general) {
+      setErrorMsg((prev) => ({ ...prev, [e.target.name]: null, general: null }));
     }
   };
 
@@ -46,28 +47,44 @@ export default function Login() {
     }
 
     try {
+      setIsLoading(true);
       const res = await axios.post(`${API}/api/login`, formData);
 
-      if (res.data.token) {
-        localStorage.setItem('adminToken', res.data.token);
+      // Check common token property locations from different backend patterns
+      const receivedToken = 
+        res.data.token || 
+        res.data.jwtToken || 
+        res.data.accessToken || 
+        res.data.data?.token;
+
+      if (receivedToken) {
+        // Store under the key read by UserProfileCard & TopHeader
+        localStorage.setItem('adminToken', receivedToken);
         setSuccessMsg('Login successful! Redirecting...');
         
         setTimeout(() => {
           navigate('/admin');
-        }, 1000);
+        }, 800);
+      } else {
+        console.error('Login succeeded but no token found in response:', res.data);
+        setErrorMsg({ general: 'Authentication failed: Token missing from response.' });
       }
     } catch (error) {
+      console.error('Login error details:', error.response?.data || error);
       if (error.response?.data?.errors) {
         setErrorMsg(error.response.data.errors);
+      } else if (error.response?.data?.message) {
+        setErrorMsg({ general: error.response.data.message });
       } else {
-        setErrorMsg({ general: 'Invalid email or password. Please try again.' });
+        setErrorMsg({ general: 'Invalid email or password. Please check your connection.' });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans relative overflow-hidden">
-      
       {/* Decorative Ambient Glows */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#0A4D8C]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#6DBE45]/15 rounded-full blur-3xl pointer-events-none" />
@@ -98,7 +115,6 @@ export default function Login() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            
             {/* Email Field */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
@@ -110,7 +126,8 @@ export default function Login() {
                   placeholder="admin@example.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-[#0A4D8C] focus:bg-white transition-all"
+                  disabled={isLoading}
+                  className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-[#0A4D8C] focus:bg-white transition-all disabled:opacity-60"
                 />
               </div>
               {errorMsg.email && <p className="text-[11px] text-rose-600 mt-1 font-medium">{errorMsg.email}</p>}
@@ -123,7 +140,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => alert('Password reset feature placeholder')}
-                  className="text-[11px] font-semibold text-[#0A4D8C] hover:underline"
+                  className="text-[11px] font-semibold text-[#0A4D8C] hover:underline cursor-pointer"
                 >
                   Forgot Password?
                 </button>
@@ -136,12 +153,13 @@ export default function Login() {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-[#0A4D8C] focus:bg-white transition-all"
+                  disabled={isLoading}
+                  className="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-[#0A4D8C] focus:bg-white transition-all disabled:opacity-60"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -151,10 +169,20 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-[#0A4D8C] hover:bg-[#083c6e] active:scale-[0.99] text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-[#0A4D8C]/20"
+              disabled={isLoading}
+              className="w-full py-3 bg-[#0A4D8C] hover:bg-[#083c6e] active:scale-[0.99] text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-[#0A4D8C]/20 disabled:opacity-50 cursor-pointer"
             >
-              <span>Login to Dashboard</span>
-              <ArrowRight className="w-4 h-4 text-[#6DBE45]" />
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span>Signing In...</span>
+                </>
+              ) : (
+                <>
+                  <span>Login to Dashboard</span>
+                  <ArrowRight className="w-4 h-4 text-[#6DBE45]" />
+                </>
+              )}
             </button>
           </form>
 
