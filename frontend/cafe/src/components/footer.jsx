@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="grid md:grid-cols-3 gap-12 mb-12">
           <div>
-            <h3 className="text-2xl font-serif font-bold mb-4">Cafe Heaven</h3>
+            <h3 className="text-2xl font-serif font-bold mb-4">Daily Cafe</h3>
             <p className="text-white/80 leading-relaxed">
               Where every cup tells a story and every bite brings joy. Experience premium coffee
               and artisanal delights in the heart of Bhubaneswar.
@@ -62,7 +62,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-white/20 pt-8 text-center text-white/60">
-          <p>&copy; {new Date().getFullYear()} Cafe Heaven. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Daily Cafe. All rights reserved.</p>
         </div>
       </div>
     </footer>

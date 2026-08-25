@@ -142,7 +142,7 @@ export default function AddItemForm({ onClose, editItem }) {
               <h3 className="text-base font-bold tracking-wide">
                 {editItem ? "Edit Menu Item" : "Add New Menu Item"}
               </h3>
-              <p className="text-xs text-blue-100/80 font-normal">Cafe Heaven Admin Dashboard</p>
+              <p className="text-xs text-blue-100/80 font-normal">Daily Cafe Admin Dashboard</p>
             </div>
           </div>
 

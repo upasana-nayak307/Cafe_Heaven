@@ -7,7 +7,7 @@ const testimonials = [
   {
     name: 'Priya Sharma',
     role: 'Regular Customer',
-    text: 'Cafe Heaven is my go-to spot for morning coffee! The ambiance is so cozy and the latte art is absolutely beautiful. It feels like a little escape from the busy city life.',
+    text: 'Daily Cafe is my go-to spot for morning coffee! The ambiance is so cozy and the latte art is absolutely beautiful. It feels like a little escape from the busy city life.',
     rating: 5,
   },
   {
@@ -25,7 +25,7 @@ const testimonials = [
   {
     name: 'Vikram Singh',
     role: 'Local Resident',
-    text: 'What a gem! The attention to detail in every dish is remarkable. The atmosphere is perfect for both work and relaxation. Cafe Heaven truly lives up to its name.',
+    text: 'What a gem! The attention to detail in every dish is remarkable. The atmosphere is perfect for both work and relaxation. Daily Cafe truly lives up to its name.',
     rating: 5,
   },
 ];

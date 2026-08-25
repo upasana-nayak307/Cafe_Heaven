@@ -26,7 +26,7 @@ const About = () => {
         <img
             data-testid="about-image"
             src="https://images.pexels.com/photos/34832554/pexels-photo-34832554.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-            alt="Cafe Heaven Interior"
+            alt="Daily Cafe Interior"
             className="rounded-2xl shadow-2xl w-full h-[500px] object-cover"
         />
         </motion.div>
@@ -51,7 +51,7 @@ const About = () => {
             data-testid="about-description"
             className="text-base font-sans leading-relaxed text-[#4A5568] mb-6"
         >
-            Nestled in the heart of Bhubaneswar, Cafe Heaven is more than just a café—it's a
+            Nestled in the heart of Bhubaneswar, Daily Cafe is more than just a café—it's a
             sanctuary where premium coffee meets artisanal delights. Our journey began with a
             simple vision: to create a space where every cup tells a story and every bite brings
             joy.

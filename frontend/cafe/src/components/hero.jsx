@@ -41,7 +41,7 @@ const Hero = ({ onBookTableClick }) => {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-3xl sm:text-5xl lg:text-6xl tracking-tight font-serif text-white font-bold mb-4 sm:mb-6 leading-tight break-words"
             >
-              Welcome to Cafe Heaven
+              Welcome to Daily Cafe
             </motion.h1>
 
             <motion.p

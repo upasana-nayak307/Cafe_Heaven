@@ -274,30 +274,28 @@ export default function MenuPage() {
                           />
                         </div>
                       </td>
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-2.5">
-                          {item.type && (
-                            <>
-                              <span
-                                className={`w-3.5 h-3.5 border-[1.5px] ${
-                                  item.type === "veg"
-                                    ? "border-emerald-600"
-                                    : "border-rose-600"
-                                } flex items-center justify-center rounded-[2px] shrink-0 bg-white`}
-                              >
-                                {item.type === "veg" ? (
-                                  <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full" />
-                                ) : (
-                                  <span className="w-0 h-0 border-l-[2px] border-l-transparent border-r-[2px] border-r-transparent border-b-[4px] border-b-rose-600" />
-                                )}
-                              </span>
+                      <td className="py-4 px-6 text-center">
+                        {item.type && (
+                          <div className="inline-flex items-center gap-2 min-w-[80px] text-left">
+                            <span
+                              className={`w-3.5 h-3.5 border-[1.5px] ${
+                                item.type.toLowerCase() === "veg"
+                                  ? "border-emerald-600"
+                                  : "border-rose-600"
+                              } flex items-center justify-center rounded-[2px] shrink-0 bg-white`}
+                            >
+                              {item.type.toLowerCase() === "veg" ? (
+                                <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full" />
+                              ) : (
+                                <span className="w-0 h-0 border-l-[2px] border-l-transparent border-r-[2px] border-r-transparent border-b-[4px] border-b-rose-600" />
+                              )}
+                            </span>
 
-                              <p className="text-sm capitalize text-gray-700">
-                                {item.type}
-                              </p>
-                            </>
-                          )}
-                        </div>
+                            <p className="text-sm font-medium capitalize text-gray-700">
+                              {item.type}
+                            </p>
+                          </div>
+                        )}
                       </td>
                       <td className="py-4 pr-6 pl-3 whitespace-nowrap">
                         <div className="flex justify-end gap-2">

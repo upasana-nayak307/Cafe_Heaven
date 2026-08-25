@@ -46,7 +46,7 @@ const Navbar = ({ onBookTableClick }) => {
                 scrolled || !isHomePage ? 'text-[#0A4D8C]' : 'text-white'
               }`}
             >
-              The Cafe Heaven
+              The Daily Cafe
             </h1>
           </Link>
 

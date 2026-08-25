@@ -52,7 +52,7 @@ export default function Sidebar({ onClose }) {
               <Coffee size={20} />
             </div>
             <div>
-              <h1 className="font-bold text-lg leading-tight">Cafe Heaven</h1>
+              <h1 className="font-bold text-lg leading-tight">Daily Cafe</h1>
               <span className="text-xs text-gray-400">Floor Operations</span>
             </div>
           </div>

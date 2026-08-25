@@ -88,45 +88,45 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <header className="h-16 sm:h-20 bg-white border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 md:px-8 flex-shrink-0 sticky top-0 z-30">
+    <header className="h-16 sm:h-20 bg-white border-b border-gray-100 flex items-center justify-between px-3 sm:px-6 md:px-8 flex-shrink-0 sticky top-0 z-30">
       {/* LEFT SECTION */}
-      <div className="flex items-center gap-3 flex-1">
+      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 mr-2">
         <button
           type="button"
           onClick={onMenuButtonClick}
-          className="p-2 -ml-1 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors lg:hidden cursor-pointer"
+          className="p-2 -ml-1 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors lg:hidden cursor-pointer shrink-0"
           aria-label="Open Navigation Sidebar"
         >
           <Menu size={22} />
         </button>
 
         {showSearch && (
-          <div className="relative w-full max-w-[180px] sm:max-w-xs md:max-w-md">
+          <div className="relative w-full max-w-[140px] sm:max-w-xs md:max-w-md">
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              size={18}
+              className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={16}
             />
             <input
               type="text"
               readOnly
               placeholder={placeholder}
-              className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#0A4D8C] focus:bg-white transition-all cursor-default truncate"
+              className="w-full pl-8 sm:pl-10 pr-2 sm:pr-4 py-1.5 sm:py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#0A4D8C] focus:bg-white transition-all cursor-default truncate"
             />
           </div>
         )}
       </div>
 
       {/* RIGHT SECTION */}
-      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-        <a href="/admin/profile">
-          <User size={18} className="text-gray-400" />
+      <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
+        <a href="/admin/profile" className="p-1 sm:p-0">
+          <User size={18} className="text-gray-400 hover:text-gray-600 transition-colors" />
         </a>
         
         {/* NOTIFICATION BUTTON */}
         <div className="relative">
           <button
             type="button"
-            className="relative p-2 text-gray-400 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors"
+            className="relative p-1.5 sm:p-2 text-gray-400 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors"
             onClick={() => setOpen((prev) => !prev)}
             aria-label="Notifications"
           >
@@ -155,13 +155,18 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
           </div>
         </div>
 
-        <div className="h-6 sm:h-8 w-px bg-gray-200"></div>
+        <div className="h-5 sm:h-8 w-px bg-gray-200"></div>
 
+        {/* ZOMATO BADGE (Responsive for both Mobile & Desktop) */}
         <a
           href="https://www.zomato.com/bhubaneswar/the-cafe-heaven-gajapati-nagar-bhubaneshwar"
-          className="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-800 rounded-lg border border-amber-200 hidden sm:inline-block"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold px-2 sm:px-2.5 py-1 bg-amber-50 text-amber-800 rounded-lg border border-amber-200 shrink-0 hover:bg-amber-100 transition-colors"
         >
-          ⚡ Zomato Feed Active
+          <span>⚡</span>
+          <span className="sm:hidden">Zomato</span>
+          <span className="hidden sm:inline">Zomato Feed Active</span>
         </a>
       </div>
     </header>
