@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { 
   LayoutDashboard, 
   CalendarDays, 
@@ -14,9 +14,8 @@ import {
 
 export default function Sidebar({ onClose }) {
   const [userData, setUserData] = useState(null);
-  const API=import.meta.env.VITE_BACKEND_URL;
+  const API = import.meta.env.VITE_BACKEND_URL;
 
-  // Fetch logged-in user profile
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem('adminToken');
@@ -24,20 +23,25 @@ export default function Sidebar({ onClose }) {
 
       try {
         const res = await axios.get(`${API}/api/profile`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            token: token,
+            'x-auth-token': token
+          }
         });
-        if (res.data.user) {
-          setUserData(res.data.user);
+        const user = res.data.user || res.data;
+        if (user) {
+          setUserData(user);
         }
       } catch (error) {
-        console.error('Error fetching sidebar user profile:', error);
+        console.error('Error fetching sidebar user profile:', error.response?.data || error.message);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [API]);
 
-  const defaultAvatar = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=256";
+  const defaultAvatar = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=256";
   const userRoleFormatted = userData?.role === 'manager' ? 'Store Manager' : 'Administrator';
 
   return (
@@ -45,7 +49,6 @@ export default function Sidebar({ onClose }) {
 
       {/* TOP SECTION */}
       <div>
-        {/* Logo & Close Button Header */}
         <div className="h-20 flex items-center justify-between px-6 border-b border-gray-50">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-[#0A4D8C] rounded-xl flex items-center justify-center text-white shrink-0">
@@ -57,7 +60,6 @@ export default function Sidebar({ onClose }) {
             </div>
           </div>
 
-          {/* Close button for mobile screen drawer */}
           {onClose && (
             <button 
               onClick={onClose}
@@ -152,9 +154,13 @@ export default function Sidebar({ onClose }) {
       </div>
 
       {/* DYNAMIC BOTTOM PROFILE */}
-      <div className="p-4 border-t border-gray-100 flex items-center gap-3 bg-white">
+      <Link 
+        to="/admin/profile" 
+        onClick={onClose}
+        className="p-4 border-t border-gray-100 flex items-center gap-3 bg-white hover:bg-gray-50/80 transition-colors"
+      >
         <img
-          src={userData?.avatarUrl}
+          src={userData?.avatarUrl || defaultAvatar}
           alt={userData?.name || "Admin"}
           className="w-10 h-10 rounded-full object-cover shrink-0 ring-2 ring-slate-100"
         />
@@ -166,7 +172,7 @@ export default function Sidebar({ onClose }) {
             {userRoleFormatted}
           </p>
         </div>
-      </div>
+      </Link>
 
     </aside>
   );

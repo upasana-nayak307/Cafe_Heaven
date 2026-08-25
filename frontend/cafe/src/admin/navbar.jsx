@@ -1,5 +1,5 @@
 import { Search, Bell, Menu, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import NotificationPanel from "./notification";
 import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
@@ -40,7 +40,7 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
     }
   }, [notifications]);
 
-  // 3. Register Socket Handlers (Uses functional state setter)
+  // 3. Register Socket Handlers
   useEffect(() => {
     const handleNewBooking = (data) => {
       const newNotification = {
@@ -118,9 +118,9 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
 
       {/* RIGHT SECTION */}
       <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
-        <a href="/admin/profile" className="p-1 sm:p-0">
+        <Link to="/admin/profile" className="p-1 sm:p-0">
           <User size={18} className="text-gray-400 hover:text-gray-600 transition-colors" />
-        </a>
+        </Link>
         
         {/* NOTIFICATION BUTTON */}
         <div className="relative">
@@ -145,7 +145,6 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
             />
           )}
 
-          {/* Fixed responsive positioning: fits viewport on mobile and pins to right edge on desktop */}
           <div className="fixed sm:absolute top-16 sm:top-full left-3 right-3 sm:left-auto sm:right-0 mt-2 z-50 flex justify-center sm:block">
             <NotificationPanel
               isOpen={open}
@@ -155,7 +154,6 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
             />
           </div>
         </div>
-        
       </div>
     </header>
   );
