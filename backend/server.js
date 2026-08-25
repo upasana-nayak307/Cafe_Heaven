@@ -11,7 +11,7 @@ const bookingRoutes = require("./routes/bookingTableRoute");
 const menuRoutes = require("./routes/menuRoute");
 const authRoutes = require("./routes/authRoutes");
 
-// 1. Allowed origins configuration (Included both old & new Vercel domains)
+// 1. Allowed origins configuration
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
@@ -22,26 +22,33 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, or curl)
+    // Allow requests with no origin (like mobile apps, curl, or Postman)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(null, false); // Return false instead of throwing Error to prevent preflight crash
+      callback(null, false);
     }
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "token",
+    "x-auth-token",
+    "X-Requested-With",
+    "Accept"
+  ],
   optionsSuccessStatus: 200,
 };
 
-// 2. Enable CORS middleware & handle Preflight across all routes
+// 2. Enable CORS middleware & preflight globally
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
-// 3. Body Parsing Middleware
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
+// 3. Body Parsing Middleware (Increased for Base64 profile photos)
+app.use(express.json({ limit: "25mb" }));
+app.use(express.urlencoded({ limit: "25mb", extended: true }));
 
 // 4. Create Server & WebSockets
 const server = http.createServer(app);

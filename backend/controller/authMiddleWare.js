@@ -2,13 +2,20 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "No token" });
+  // Allow preflight OPTIONS requests to bypass auth check
+  if (req.method === "OPTIONS") {
+    return next();
   }
 
-  const token = authHeader.split(" ")[1];
+  const authHeader = req.headers.authorization || req.header("Authorization") || req.header("token") || req.header("x-auth-token");
+
+  if (!authHeader) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : authHeader;
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -16,7 +23,7 @@ const authMiddleware = (req, res, next) => {
     next();
   } catch (error) {
     console.log("JWT ERROR:", error.message);
-    return res.status(401).json({ message: "Invalid token" });
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
