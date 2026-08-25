@@ -154,20 +154,7 @@ export default function TopHeader({ placeholder, onMenuButtonClick, showSearch }
             />
           </div>
         </div>
-
-        <div className="h-5 sm:h-8 w-px bg-gray-200"></div>
-
-        {/* ZOMATO BADGE (Responsive for both Mobile & Desktop) */}
-        <a
-          href="https://www.zomato.com/bhubaneswar/the-cafe-heaven-gajapati-nagar-bhubaneshwar"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-semibold px-2 sm:px-2.5 py-1 bg-amber-50 text-amber-800 rounded-lg border border-amber-200 shrink-0 hover:bg-amber-100 transition-colors"
-        >
-          <span>⚡</span>
-          <span className="sm:hidden">Zomato</span>
-          <span className="hidden sm:inline">Zomato Feed Active</span>
-        </a>
+        
       </div>
     </header>
   );
